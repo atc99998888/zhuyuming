@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>验证中</title>
+  <title>加载中</title>
   <style>
     body {
       margin: 0;
@@ -119,14 +119,14 @@
 
   <div id="verify-box" class="card hidden">
     <div class="lock-icon">🔒</div>
-    <div class="message">请输入验证码以继续</div>
+    <div class="message">请输入确认码继续</div>
     <div class="code-area">
-      <canvas id="captchaCanvas" width="120" height="40" title="点击更换验证码"></canvas>
-      <button class="refresh-btn" onclick="drawCaptcha()">刷新</button>
+      <canvas id="captchaCanvas" width="120" height="40" title="更换确认码"></canvas>
+      <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
     </div>
-    <input type="text" id="code-input" maxlength="4" placeholder="验证码">
+    <input type="text" id="code-input" maxlength="4" placeholder="确认码">
     <br>
-    <button onclick="checkCode()">确认</button>
+    <button onclick="checkCode()">确定</button>
     <div id="error"></div>
   </div>
 
