@@ -3,75 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>正在加载</title>
+  <title>验证中</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      background-color: #f2f4f8;
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: #fff;
+      color: #333;
       text-align: center;
-      min-height: 100vh;
-      background: linear-gradient(-45deg, #0f0f0f, #1c1c1c, #2e2e2e, #0f0f0f);
-      background-size: 300% 300%;
-      animation: gradientBG 10s ease infinite;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 100px 20px;
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
-    .shake {
-      animation: shake 0.3s;
-    }
-
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
     .card {
-      backdrop-filter: blur(10px);
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-      max-width: 420px;
-      width: 90%;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
       margin: 0 auto;
       padding: 40px 30px;
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeInUp 0.7s ease forwards;
-    }
-
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     .lock-icon {
       font-size: 64px;
+      color: #e74c3c;
       margin-bottom: 20px;
-      animation: pulse 1.8s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
     }
 
     .message {
@@ -89,13 +46,13 @@
 
     canvas {
       border-radius: 5px;
-      background-color: #f1f1f1;
+      background-color: #eee;
       cursor: pointer;
     }
 
     .refresh-btn {
-      background-color: rgba(255,255,255,0.15);
-      color: #fff;
+      background-color: #e0e0e0;
+      color: #333;
       border: none;
       padding: 6px 10px;
       font-size: 14px;
@@ -105,41 +62,51 @@
     }
 
     .refresh-btn:hover {
-      background-color: rgba(255,255,255,0.3);
+      background-color: #ccc;
     }
 
     input[type="text"] {
       padding: 12px;
       font-size: 16px;
       width: 180px;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid #ccc;
       border-radius: 5px;
       margin-bottom: 20px;
       text-align: center;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
+      transition: all 0.2s;
     }
 
     button {
       padding: 12px 25px;
       font-size: 16px;
-      background-color: rgba(255,255,255,0.15);
+      background-color: #3498db;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.2s;
     }
 
     button:hover {
-      background-color: rgba(255,255,255,0.3);
-      transform: translateY(-2px);
+      background-color: #2980b9;
     }
 
     #error {
-      color: #ff4d4f;
+      color: #e74c3c;
       margin-top: 10px;
       font-size: 14px;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .shake {
+      animation: shake 0.3s ease;
     }
   </style>
 </head>
@@ -152,14 +119,14 @@
 
   <div id="verify-box" class="card hidden">
     <div class="lock-icon">🔒</div>
-    <div class="message">请输入确认码继续</div>
+    <div class="message">请输入验证码以继续</div>
     <div class="code-area">
-      <canvas id="captchaCanvas" width="120" height="40" title="更新确认码"></canvas>
-      <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
+      <canvas id="captchaCanvas" width="120" height="40" title="点击更换验证码"></canvas>
+      <button class="refresh-btn" onclick="drawCaptcha()">刷新</button>
     </div>
-    <input type="text" id="code-input" maxlength="4" placeholder="确认码">
+    <input type="text" id="code-input" maxlength="4" placeholder="验证码">
     <br>
-    <button onclick="checkCode()">确定</button>
+    <button onclick="checkCode()">确认</button>
     <div id="error"></div>
   </div>
 
@@ -221,8 +188,7 @@
     }
 
     function checkCode() {
-      const input = document.getElementById("code-input");
-      const val = input.value.trim();
+      const val = document.getElementById("code-input").value.trim();
       if (val === code) {
         document.getElementById("error").innerText = "";
         const cdnPath = decodeData(cfgData);
@@ -232,7 +198,8 @@
           document.getElementById("error").innerText = "载入失败，请稍后重试";
         }
       } else {
-        document.getElementById("error").innerText = "确认码错误，请重试";
+        document.getElementById("error").innerText = "验证码错误，请重试";
+        const input = document.getElementById("code-input");
         input.classList.add("shake");
         drawCaptcha();
         setTimeout(() => input.classList.remove("shake"), 300);
