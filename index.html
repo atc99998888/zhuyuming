@@ -278,10 +278,15 @@ function showErr(msg, shake) {
 
 if (localStorage.getItem("blocked_user") === "permanent") {
   document.body.innerHTML = `
-    <div style="margin:100px auto;max-width:420px;text-align:center;">
-      <div style="font-size:24px;color:#d32f2f;margin-bottom:20px;">🚫 页面访问受限</div>
-      <div style="font-size:16px;color:#555;">该用户已被平台标记，访问权限已关闭<br>如有误请联系平台核实</div>
-    </div>`;
+    <div class="blocked-card" id="blocked-box">
+  <div class="icon">🚫</div>
+  <div class="title">页面访问受限</div>
+  <div class="desc">
+    该页面因存在异常行为<br>
+    已被平台实施访问限制<br><br>
+  </div>
+  <div class="footer">© 2025 内容管理与安全策略中心 ｜ 版权所有</div>
+</div>`;
 } else {
   window.onload = () => {
     if (isWX()) {
