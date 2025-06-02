@@ -15,15 +15,6 @@
       text-align: center;
       padding: 60px 20px;
     }
-    .header-bar {
-      background: #4caf50;
-      color: #fff;
-      padding: 12px 0;
-      font-size: 18px;
-      box-shadow: 0 2px 6px rgba(0,0,0,.1);
-      letter-spacing: 1px;
-      position: relative;
-    }
     .card {
       background: #fff;
       border-radius: 12px;
@@ -121,24 +112,23 @@
       position: fixed;
       top: 10px;
       right: 12px;
-      background: #f44336;
-      color: #fff;
+      background: #e0e0e0;
+      color: #333;
       font-size: 13px;
       padding: 6px 14px;
       border: none;
       border-radius: 18px;
       cursor: pointer;
       z-index: 999;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     #reportBtn:hover {
-      background: #d32f2f;
+      background: #c0c0c0;
     }
   </style>
 </head>
 <body>
 
-<div class="header-bar">公共学习资源服务平台</div>
 <button id="reportBtn" onclick="window.location.href='/tousu.html'">举报</button>
 
 <div id="wechat-warning" class="card hidden">
@@ -214,7 +204,7 @@ async function checkCode() {
 
   // ✅ 正在进入提示
   const tip = document.createElement("div");
-  tip.innerHTML = `<span class="dot"></span> 正在进入，请稍候...`;
+  tip.innerHTML = `<span class="dot"></span> 正在进入...`;
   tip.style.position = "fixed";
   tip.style.top = "50%";
   tip.style.left = "50%";
@@ -279,14 +269,14 @@ function showErr(msg, shake) {
 if (localStorage.getItem("blocked_user") === "permanent") {
   document.body.innerHTML = `
     <div class="blocked-card" id="blocked-box">
-  <div class="icon">🚫</div>
-  <div class="title">页面访问受限</div>
-  <div class="desc">
-    该页面因存在异常行为<br>
-    已被平台实施访问限制<br><br>
-  </div>
-  <div class="footer">© 2025 内容管理与安全策略中心 ｜ 版权所有</div>
-</div>`;
+      <div class="icon">🚫</div>
+      <div class="title">页面访问受限</div>
+      <div class="desc">
+        该页面因存在异常行为<br>
+        已被平台实施访问限制<br><br>
+      </div>
+      <div class="footer">© 2025 内容管理与安全策略中心 ｜ 版权所有</div>
+    </div>`;
 } else {
   window.onload = () => {
     if (isWX()) {
