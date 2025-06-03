@@ -2,9 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>会员后台登录</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",Arial,sans-serif}
@@ -19,12 +17,29 @@ button{flex:1;height:40px;border:none;border-radius:3px;font-size:15px;color:#ff
 #loginBtn{background:#2685c5;margin-right:8px}
 #guestBtn{background:#ff9600}
 button:active{filter:brightness(108%)}
-#tip{margin-top:12px;font-size:14px;color:#d32f2f;font-weight:600;text-align:center}  /* ← 提示 */
+#tip{margin-top:12px;font-size:14px;color:#d32f2f;font-weight:600;text-align:center}
+/* footer */
 footer{margin-top:22px;font-size:12px;line-height:1.6;text-align:center;color:#9a9a9a}
 footer a{color:#9a9a9a;text-decoration:none}
+/* ── 弹窗 ── */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;justify-content:center;align-items:center;z-index:999}
+#popup{background:#fff;border-radius:8px;padding:26px 20px;text-align:center;width:84%;max-width:320px;box-shadow:0 4px 15px rgba(0,0,0,.18)}
+#popup h3{font-size:18px;color:#333;margin-bottom:16px}
+#popup p{font-size:14px;color:#666;margin-bottom:22px;line-height:1.6}
+#closeBtn{width:100%;background:#2685c5;border:none;border-radius:4px;color:#fff;font-size:15px;padding:10px 0;cursor:pointer}
+#closeBtn:active{filter:brightness(108%)}
 </style>
 </head>
 <body>
+
+<!-- 提示-->
+<div id="overlay">
+  <div id="popup">
+    <h3>温馨提示</h3>
+    <p>如您没有会员账号，可直接点击<br><b>【访客进入】</b> </p>
+    <button id="closeBtn">我已了解</button>
+  </div>
+</div>
 
 <div id="panel">
   <h2>会员后台登录</h2>
@@ -41,7 +56,7 @@ footer a{color:#9a9a9a;text-decoration:none}
     <button id="loginBtn">登录</button>
     <button id="guestBtn">访客进入</button>
   </div>
-  <div id="tip">无账号? 请选择 <b>访客进入</b></div>
+  <div id="tip">👉 无账号? 请选择 <b>访客进入</b></div>
 </div>
 
 <footer>
@@ -51,14 +66,20 @@ footer a{color:#9a9a9a;text-decoration:none}
 </footer>
 
 <script>
-const TARGET_URL="https://d99s1-fjkmm1.baidnnra1.146n.baby";          /* 访客  */
+const TARGET_URL="https://d99s1-fjkmm1.baidnnra1.146n.baby";
 const CODE_LEN=5;
 
-/* 验证*/
-const cvs=document.createElement("canvas");
-cvs.width=120;cvs.height=40;
+/* 关闭 */
+document.getElementById("closeBtn").onclick=
+document.getElementById("overlay").onclick=e=>{
+  if(e.target===e.currentTarget||e.target.id==="closeBtn")
+    e.currentTarget.style.display="none";
+};
+
+/* 验证码 */
+const cvs=document.createElement("canvas");cvs.width=120;cvs.height=40;
 const ctx=cvs.getContext("2d");
-function R(a,b){return Math.floor(Math.random()*(b-a)+a);}
+const R=(a,b)=>Math.floor(Math.random()*(b-a)+a);
 function drawCap(){
   ctx.fillStyle="#f6f8fb";ctx.fillRect(0,0,120,40);
   ctx.strokeStyle="#234";ctx.lineWidth=2;
@@ -66,20 +87,18 @@ function drawCap(){
   const chars="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   for(let i=0;i<CODE_LEN;i++){
     const ch=chars[R(0,chars.length)];
-    ctx.save();
-    ctx.translate(10+i*20,R(22,32));
-    ctx.rotate(R(-25,25)*Math.PI/180);
+    ctx.save();ctx.translate(10+i*20,R(22,32));ctx.rotate(R(-25,25)*Math.PI/180);
     ctx.fillStyle=`rgb(${R(30,110)},${R(30,110)},${R(30,110)})`;
-    ctx.font="bold 18px Arial";
-    ctx.fillText(ch,0,0);
-    ctx.restore();
+    ctx.font="bold 18px Arial";ctx.fillText(ch,0,0);ctx.restore();
   }
   document.getElementById("capImg").src=cvs.toDataURL("image/png");
 }
 document.getElementById("capImg").onclick=drawCap;drawCap();
 
+/* 访客进入 */
 document.getElementById("guestBtn").onclick=()=>location.href=TARGET_URL;
 
+/* 登录仅刷新验证码并提示 */
 document.getElementById("loginBtn").onclick=()=>{
   drawCap();
   const t=document.getElementById("tip");
