@@ -1,123 +1,180 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>会员后台登录</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Greenfield University · Official Website</title>
+<meta name="description"
+      content="Greenfield University — private research university offering 120+ majors, global research labs and inclusive student life since 1896.">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",Arial,sans-serif}
-body{background:#cfd4df;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#555}
-#panel{width:340px;background:#fff;padding:32px 26px 40px;border-radius:4px;box-shadow:0 0 6px rgba(0,0,0,.12)}
-h2{text-align:center;font-size:20px;margin-bottom:26px;color:#444}
-.row{display:flex;align-items:center;margin-bottom:18px}
-.row input{flex:1;height:40px;border:1px solid #c7ced6;border-radius:2px;font-size:15px;padding:0 10px}
-#capImg{width:120px;height:40px;border:1px solid #c7ced6;border-radius:2px;object-fit:cover;cursor:pointer;margin-right:8px}
-.btns{display:flex;justify-content:space-between;margin-top:6px}
-button{flex:1;height:40px;border:none;border-radius:3px;font-size:15px;color:#fff;cursor:pointer}
-#loginBtn{background:#2685c5;margin-right:8px}
-#guestBtn{background:#ff9600}
-button:active{filter:brightness(108%)}
-#tip{margin-top:12px;font-size:14px;color:#d32f2f;font-weight:600;text-align:center}
-footer{margin-top:22px;font-size:12px;line-height:1.6;text-align:center;color:#9a9a9a}
-footer a{color:#9a9a9a;text-decoration:none}
+  :root{--g:#4caf50;--gd:#388e3c;--bg:#f1f8f4;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);font-family:"Segoe UI","Roboto",Arial,sans-serif;}
 
-/* ——首次—— */
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;justify-content:center;align-items:center;z-index:999}
-#popup{background:#fff;border-radius:8px;padding:26px 20px;text-align:center;width:84%;max-width:320px;box-shadow:0 4px 15px rgba(0,0,0,.18)}
-#popup h3{font-size:18px;color:#333;margin-bottom:16px}
-#popup p{font-size:14px;color:#666;margin-bottom:22px;line-height:1.6}
-#closeBtn{width:100%;background:#2685c5;border:none;border-radius:4px;color:#fff;font-size:15px;padding:10px 0;cursor:pointer}
-#closeBtn:active{filter:brightness(108%)}
+  /* --- 顶部区域 --- */
+  header{display:flex;flex-direction:column;align-items:center;justify-content:center;
+         height:calc(100% - 110px);gap:38px;text-align:center}
+  .title{font-size:1.9rem;font-weight:700;color:#235085;letter-spacing:.04em}
+  .subtitle{font-size:.9rem;color:#49648e;margin-top:6px}
 
-/* ——加载—— */
-#loading{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;justify-content:center;align-items:center;z-index:998}
-#loading span{background:#2685c5;color:#fff;padding:12px 26px;border-radius:30px;font-size:15px;display:flex;align-items:center;gap:8px}
-#loading i{width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.5)}}
+  /* --- 菜单按钮 --- */
+  .menu{display:flex;flex-direction:column;gap:18px;width:86vw;max-width:320px}
+  .btn{display:block;width:100%;background:var(--g);color:#fff;border:0;border-radius:10px;
+       padding:18px 0;font-size:1.08rem;font-weight:600;cursor:pointer;transition:background .18s}
+  .btn:hover{background:var(--gd)}
+
+  /* --- 信息 --- */
+  details{width:100%;max-width:920px;margin:20px auto}
+  summary{list-style:none;font-size:.95rem;color:#4d5a75;cursor:pointer;text-align:center;padding:10px 0}
+  summary::after{content:"▼";margin-left:6px;font-size:.7rem;transition:transform .2s}
+  details[open] summary{color:#235085;font-weight:600}
+  details[open] summary::after{transform:rotate(180deg)}
+
+  .info-box{background:#fff;border-radius:12px;box-shadow:0 2px 14px #b7c9e130;
+           padding:34px 28px;margin-top:6px;line-height:1.78;color:#253553;font-size:1.05rem;
+           max-height:70vh;overflow:auto}
+  .info-box h2{font-size:1.18rem;color:#235085;margin:24px 0 10px;font-weight:700}
+  .info-box ul{padding-left:22px}
+
+  /* --- 备案 --- */
+  footer{position:fixed;left:0;bottom:0;width:100vw;background:var(--bg);
+         font-size:.83rem;color:#7685a2;text-align:center;line-height:1.6;padding:12px 8px 16px}
+  footer a{color:inherit;text-decoration:none}
+  footer a:hover{text-decoration:underline}
+      
+
+  /* --- Loading --- */
+  #loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+           background:rgba(255,255,255,.75);z-index:9999}
+  #loading span{font-size:1rem;color:#235085;font-weight:600;letter-spacing:.03em}
+  #loading i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#235085;
+             margin-left:8px;animation:spin 1s linear infinite}
+  @keyframes spin{0%{transform:scale(1)}50%{transform:scale(1.6);opacity:.5}100%{transform:scale(1)}}
+
+  @media(max-width:620px){.title{font-size:1.3rem}.btn{font-size:.97rem}}
 </style>
 </head>
 <body>
 
-<!-- 进入 -->
-<div id="overlay">
-  <div id="popup">
-    <h3>温馨提示</h3>
-    <p>如您没有会员账号，可直接点击<br><b>【访客进入】</b></p>
-    <button id="closeBtn">我已了解</button>
-  </div>
-</div>
-
-<!-- 加载 -->
-<div id="loading"><span><i></i> 正在加载…</span></div>
-
-<div id="panel">
-  <h2>会员后台登录</h2>
-
-  <div class="row"><input placeholder="用户名" autocomplete="off"></div>
-  <div class="row"><input type="password" placeholder="密码" autocomplete="off"></div>
-
-  <div class="row">
-    <img id="capImg" title="点击刷新">
-    <input id="codeInp" placeholder="验证码" maxlength="6" autocomplete="off">
+<header>
+  <div>
+    <div class="title">Greenfield University</div>
+    <div class="subtitle">下面每一个都不同，建议全部下载留存</div>
   </div>
 
-  <div class="btns">
-    <button id="loginBtn">登录</button>
-    <button id="guestBtn">访客进入</button>
+  <div class="menu">
+    <button class="btn" onclick="go('https://sttnx.bybw.cc/?data=TxPhx-gtgs_f42UjGGQoPb6iYptngYm5q6eyzLUPSQ8')">🎞同城陪玩.实战视频.免费通道 →</button>
+    <button class="btn" onclick="go('https://fpnl5.lmycbq.com/d-GjpOo130.html?e=1&ehzDr=XTvkpydD9z&ts=1779379112031')">🎞校园偷拍视频可约内部群 →</button>
+    <button class="btn" onclick="go('https://bLoXpM.h1ltisl.garden/d-ApCfVKRt.html?e=1&TrkN0=lSTbTvLcJZwNh&ts=1779379027135')">🎞 亲测免费通道→不一样 →</button> 
+    <button class="btn" onclick="go('https://yvfke.56acx.cc/?data=PMKvn2lnclplFJoK0yXek6EDrZDzdtoRtupA6UlrOGA')">🎞 这个最全~各种另类视频➕暗网 →</button>   
   </div>
-  <div id="tip">无账号? 请选择 <b>访客进入</b></div>
-</div>
+</header>
+
+<!-- -------- 官方信息-------- -->
+<details id="infoBox">
+  <summary>University Info</summary>
+  <div class="info-box">
+
+    <h2>Mission &amp; Vision</h2>
+    <p>Greenfield University's mission is to advance human knowledge and foster global leaders through
+       inquiry-driven education, interdisciplinary research and civic engagement. Our vision is to be a
+       top-50 global university recognised for innovation, inclusion and public impact.</p>
+
+    <h2>Historical Milestones</h2>
+    <ul>
+      <li><strong>1896</strong> — Founded by philanthropist Helen R. Greenfield as a liberal-arts college.</li>
+      <li><strong>1935</strong> — First PhD degrees awarded in Chemistry and Philosophy.</li>
+      <li><strong>1964</strong> — Medical Sciences Campus opened; university hospital now serves 320 000 patients annually.</li>
+      <li><strong>1999</strong> — Center for Environmental Policy launched (ranked #9 worldwide in 2024).</li>
+      <li><strong>2015</strong> — Achieved carbon-neutral electricity ten years ahead of schedule.</li>
+    </ul>
+
+    <h2>Colleges &amp; Academic Offerings</h2>
+    <p>The University confers 74 bachelor’s, 68 master’s, 24 doctoral and 18 professional certificates across six academic units:</p>
+    <ul>
+      <li><strong>College of Arts &amp; Sciences</strong> — BA / BSc, MA, MSc, MFA</li>
+      <li><strong>School of Business (AACSB)</strong> — BBA, MBA, MS-Finance, PhD-Management</li>
+      <li><strong>School of Engineering (ABET)</strong> — BEng, MEng, PhD across eight disciplines</li>
+      <li><strong>School of Law (ABA)</strong> — JD, LLM, joint JD/MBA & JD/MPA</li>
+      <li><strong>College of Health Sciences</strong> — BS-Nursing, MPH, PharmD, DPT</li>
+      <li><strong>Conservatory of Music &amp; Performing Arts</strong> — BMus, MMus, DMA</li>
+    </ul>
+
+    <h2>Rankings &amp; Recognition</h2>
+    <p>
+      • #82 National Universities — <em>U.S. News &amp; World Report 2025</em><br>
+      • Top-100 Worldwide Employability — <em>Times Higher Education 2024</em><br>
+      • #14 Global Sustainability Impact — <em>QS Sustainability 2024</em>
+    </p>
+
+    <h2>Research &amp; Innovation</h2>
+    <p>External funding exceeds <strong>US $220 million</strong> annually. Flagship facilities include:</p>
+    <ul>
+      <li><strong>Institute for Advanced Data Science</strong> — 200 AI researchers, petaflop HPC cluster</li>
+      <li><strong>Renewable Materials Innovation Lab</strong> — Patented carbon-negative cement</li>
+      <li><strong>Center for Precision Medicine</strong> — NIH-designated Clinical Research Unit</li>
+      <li><strong>Greenfield Observatory</strong> — 4-m optical telescope &amp; radio array</li>
+    </ul>
+
+    <h2>Campus Life &amp; Facilities</h2>
+    <p>
+      • 17 residence halls • 3 eco-friendly dining commons • 22 varsity teams (NCAA Div II)<br>
+      • 180+ student organisations • 24/7 Health &amp; Wellness Centre • “Green Ride” bike-share
+    </p>
+
+    <h2>Tuition &amp; Financial Aid</h2>
+    <p>86 % of undergraduates receive assistance. Average first-year aid package 2024-25: <strong>US $32 800</strong>, combining scholarships, grants, work-study and low-interest loans.</p>
+
+    <h2>Governance</h2>
+    <p>The University is overseen by a 28-member Board of Trustees chaired by alumna Dr Maria H. Koenig. Daily operations are led by President Prof Samuel D. Whitaker and a 12-member executive cabinet.</p>
+
+    <h2>Global Partnerships</h2>
+    <p>Exchange agreements with 85 universities in 27 countries—including University of Tokyo, ETH Zurich and University of Cape Town—enable more than 1 100 students each year to study abroad.</p>
+
+    <h2>Sustainability Commitment</h2>
+    <p>Greenfield aims for <strong>net-zero campus operations by 2030</strong>. Recent projects cut water use 28 % and landfill waste 64 %, while solar arrays now supply 92 % of electricity.</p>
+
+    <h2>Notable Alumni</h2>
+    <ul>
+      <li>Dr Valerie Chen ’02 — Nobel Prize in Chemistry (2022)</li>
+      <li>Mr Javier Ruiz ’98 — CEO, Global Bank Group</li>
+      <li>Ms Nina Thorpe ’11 — Academy Award-winning film director</li>
+    </ul>
+
+    <h2>Accreditations</h2>
+    <p>MSCHE • ABET • AACSB • American Bar Association • CCNE • NASM</p>
+
+    <h2>Contact</h2>
+    <p>100 College Ave, Ithaca, NY 14850, USA<br>
+       Tel +1-212-555-8000 &nbsp;|&nbsp; Fax +1-212-555-8010<br>
+       Email <a href="mailto:info@greenfield.edu">info@greenfield.edu</a></p>
+  </div>
+</details>
 
 <footer>
-  Global Learning Resources Ltd.&nbsp;|&nbsp;Reg&nbsp;No.&nbsp;US-NY-2025-987654<br>
-  ©&nbsp;2025&nbsp;Global&nbsp;Learning&nbsp;Resources&nbsp;Ltd.&nbsp;All&nbsp;rights&nbsp;reserved<br>
-  Support:&nbsp;<a href="mailto:support@glr-inc.com">support@glr-inc.com</a>&nbsp;|&nbsp;Tel:&nbsp;+1-800-555-2199
+  © 2025 Greenfield University — 501(c)(3) non-profit (EIN 12-3456789).<br>
+  Registered with the New York State Board of Regents #2025-987654.<br>
+  <a href="#">Privacy Policy</a> • <a href="#">Accessibility</a> • <a href="#">Terms of Use</a>
 </footer>
 
+<!-- Loading overlay -->
+<div id="loading"><span>Loading<i></i></span></div>
+
 <script>
-const TARGET_URL="https://jiaoyu.meet-cnd.xxxvvv.org";   // 访客
-const CODE_LEN=5;
-
-/* 关闭*/
-document.getElementById("closeBtn").onclick=
-document.getElementById("overlay").onclick=e=>{
-  if(e.target===e.currentTarget||e.target.id==="closeBtn")
-    e.currentTarget.style.display="none";
-};
-
-/* 简易*/
-const cvs=document.createElement("canvas");cvs.width=120;cvs.height=40;
-const ctx=cvs.getContext("2d");
-const R=(a,b)=>Math.floor(Math.random()*(b-a)+a);
-function drawCap(){
-  ctx.fillStyle="#f6f8fb";ctx.fillRect(0,0,120,40);
-  ctx.strokeStyle="#234";ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(R(0,20),R(10,30));ctx.lineTo(R(100,120),R(10,30));ctx.stroke();
-  const chars="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  for(let i=0;i<CODE_LEN;i++){
-    const ch=chars[R(0,chars.length)];
-    ctx.save();ctx.translate(10+i*20,R(22,32));ctx.rotate(R(-25,25)*Math.PI/180);
-    ctx.fillStyle=`rgb(${R(30,110)},${R(30,110)},${R(30,110)})`;
-    ctx.font="bold 18px Arial";ctx.fillText(ch,0,0);ctx.restore();
+  /* 加载*/
+  function go(url){
+    window.open(url,'_blank','noopener');
+    const mask=document.getElementById('loading');
+    mask.style.display='flex';
+    setTimeout(()=>{ mask.style.display='none'; },3000);
   }
-  document.getElementById("capImg").src=cvs.toDataURL("image/png");
-}
-document.getElementById("capImg").onclick=drawCap;drawCap();
 
-/* 访客进入：加载 → 0.8 s */
-document.getElementById("guestBtn").onclick=()=>{
-  const load=document.getElementById("loading");
-  load.style.display="flex";
-  setTimeout(()=>{load.style.display="none";location.href=TARGET_URL;},800);
-};
-
-/* 登录按钮*/
-document.getElementById("loginBtn").onclick=()=>{
-  drawCap();
-  const t=document.getElementById("tip");
-  t.textContent="登陆失败；如无账号请选择访客进入";
-  setTimeout(()=>t.textContent="👉 无账号? 请选择 访客进入",2500);
-};
+  /* 滚动条 */
+  document.getElementById('infoBox').addEventListener('toggle',e=>{
+    document.body.style.overflow = e.target.open ? 'auto' : 'hidden';
+  });
 </script>
+
 </body>
 </html>
