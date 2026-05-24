@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Greenfield University · Official Website</title>
-<meta name="description"
-      content="Greenfield University — private research university offering 120+ majors, global research labs and inclusive student life since 1896.">
+<meta name="description" content="Greenfield University — private research university offering 120+ majors, global research labs and inclusive student life since 1896.">
 <style>
   :root{--g:#4caf50;--gd:#388e3c;--bg:#f1f8f4;}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -64,10 +62,27 @@
   </div>
 
   <div class="menu">
-    <button class="btn" onclick="go('https://sttnx.bybw.cc/?data=TxPhx-gtgs_f42UjGGQoPb6iYptngYm5q6eyzLUPSQ8')">🎞同城陪玩.实战视频.免费通道 →</button>
-    <button class="btn" onclick="go('https://oss-oap.dsmm.com/XlmR8hB/MGMS/macHKWO?t=0b3haSBTcg')">🎞校园偷拍视频可约内部群 →</button>
-    <button class="btn" onclick="go('https://images.zhishen.net.cn/xueshuzhi/userhead/20250629/20250629211234502.html?code=q1xZUmzb')">🎞 亲测免费通道→不一样 →</button> 
-    <button class="btn" onclick="go('https://yvfke.56acx.cc/?data=PMKvn2lnclplFJoK0yXek6EDrZDzdtoRtupA6UlrOGA')">🎞 这个最全~各种另类视频➕暗网 →</button>   
+    
+    <!-- 菜单1：石榴的MJ -->
+    <button class="btn" data-visible="1" onclick="go('https://sttnx.bybw.cc/?data=TxPhx-gtgs_f42UjGGQoPb6iYptngYm5q6eyzLUPSQ8')">
+        🎞同城陪玩.实战视频.免费通道 →
+    </button>
+
+    <!-- 菜单2：萧菲菲的 -->
+    <button class="btn" data-visible="1" onclick="go('https://oss-oap.dsmm.com/XlmR8hB/MGMS/macHKWO?t=0b3haSBTcg')">
+        🎞校园偷拍视频可约内部群 →
+    </button>
+
+    <!-- 菜单3：石榴的24小时 -->
+    <button class="btn" data-visible="0" onclick="go('https://images.zhishen.net.cn/xueshuzhi/userhead/20250629/20250629211234502.html?code=q1xZUmzb')">
+        🎞 亲测免费通道→不一样 →
+    </button> 
+
+    <!-- 菜单4：石榴的MJ2 -->
+    <button class="btn" data-visible="1" onclick="go('https://yvfke.56acx.cc/?data=PMKvn2lnclplFJoK0yXek6EDrZDzdtoRtupA6UlrOGA')">
+        🎞 这个最全~各种另类视频➕暗网 →
+    </button>   
+
   </div>
 </header>
 
@@ -162,7 +177,7 @@
 <div id="loading"><span>Loading<i></i></span></div>
 
 <script>
-  /* 加载*/
+  /* 加载 */
   function go(url){
     window.open(url,'_blank','noopener');
     const mask=document.getElementById('loading');
@@ -173,6 +188,16 @@
   /* 滚动条 */
   document.getElementById('infoBox').addEventListener('toggle',e=>{
     document.body.style.overflow = e.target.open ? 'auto' : 'hidden';
+  });
+
+  /* ========== 菜单显示控制（新增） ========== */
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.menu .btn');
+    buttons.forEach(btn => {
+      if (btn.getAttribute('data-visible') === '0') {
+        btn.style.display = 'none';
+      }
+    });
   });
 </script>
 
